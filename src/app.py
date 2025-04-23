@@ -120,8 +120,11 @@ def signup():
 @jwt_required()
 def private():
     current_user_email = get_jwt_identity()
+    user = User.query.filter_by(email=current_user_email).first()
+    if user is None:
+        return jsonify({'msg': 'User not found'}), 404
 
-    return jsonify({'msg': f'Access granted to the user: {current_user_email}'}), 200   
+    return jsonify(user.serialize()), 200   
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
