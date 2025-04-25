@@ -25,7 +25,9 @@ const Profile = () => {
 
     })
   return (
-    <div>Profile</div>
+    <div className='text-center'>
+      <h1>Profile</h1>
+    </div>
   )
 }
 
