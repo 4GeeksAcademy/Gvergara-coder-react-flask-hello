@@ -15,6 +15,7 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 # from models import Person
 
@@ -26,6 +27,7 @@ app.url_map.strict_slashes = False
 
 app.config["JWT_SECRET_KEY"] = os.getenv('JWT_KEY')  # Change this!
 jwt = JWTManager(app)
+CORS(app)
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -83,13 +85,12 @@ def login():
     if 'password' not in body:
         return jsonify({'msg': 'The password is required'}), 400
     user = User.query.filter_by(email=body['email']).first()
-    print(user)
     if user is None:
         return jsonify({'msg': 'Invalid username or password'}), 400
     if body['password'] != user.password:
         return jsonify({'msg': 'Invalid username or password'}), 400
     acces_token = create_access_token(identity=user.email)
-    return jsonify({'msg': 'Are you logged in', 'token': acces_token}), 400
+    return jsonify({'msg': 'Are you logged in', 'token': acces_token}), 200
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -114,7 +115,7 @@ def signup():
     db.session.commit()
 
     access_token = create_access_token(identity=new_user.email)
-    return jsonify({'msg': 'User successful user login', 'token': access_token}), 201
+    return jsonify({'msg': 'User successful, user login', 'token': access_token}), 201
 
 @app.route('/private', methods=['GET'])
 @jwt_required()
