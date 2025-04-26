@@ -8,7 +8,7 @@ export const Navbar = () => {
 
 	useEffect(() => {
 
-	}, [store.currenUser])
+	}, [store.currentUser])
 	return (
 		<nav className="navbar navbar-light bg-light">
 			<div className="container">
@@ -16,7 +16,7 @@ export const Navbar = () => {
 					<span className="navbar-brand mb-0 h1">React Boilerplate</span>
 				</Link>
 				<div className="ml-auto">
-					{store.currenUser == null &&
+					{store.currentUser == null &&
 						<>
 							<button className="btn btn-primary me-4"
 								onClick={() => { navigate("/login") }}
@@ -28,7 +28,7 @@ export const Navbar = () => {
 
 						</>
 					}
-					{store.currenUser &&
+					{store.currentUser &&
 						<button className="btn btn-danger"
 							onClick={() => {
 								localStorage.removeItem("token")

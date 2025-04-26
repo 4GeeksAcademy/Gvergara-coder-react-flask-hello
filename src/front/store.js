@@ -13,7 +13,7 @@ export const initialStore=()=>{
         background: null,
       }
     ],
-    currenUser: null,
+    currentUser: null,
   }
 }
 
@@ -36,7 +36,7 @@ export default function storeReducer(store, action = {}) {
       case 'set_current_user':
         return {
           ...store,
-          currenUser: action.payload
+          currentUser: action.payload
         };
     default:
       throw Error('Unknown action.');

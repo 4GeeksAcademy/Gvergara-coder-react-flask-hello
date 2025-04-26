@@ -27,8 +27,11 @@ const Profile = () => {
             type: "set_current_user",
             payload: data.user
           })
-        }
-        navigate("/profile")
+        }else {
+          dispatch({
+            type: "set_current_user", 
+            payload: null
+          })}
         console.log(data);
       }
       )
@@ -37,19 +40,17 @@ const Profile = () => {
       })
 
   }, [])
-  if (store.currenUser == null){
+  if (store.currentUser == null){
     return <h1 className='text-center'> You are not allowed </h1>
   }
 
-  if (store.currenUser){
 
     return (
       <div className='text-center'>
         <h1>Profile</h1>
-        <p>email: {store.currenUser.email}</p>
+        <p>email: {store.currentUser.email}</p>
       </div>
     )
-  }
 }
 
 export default Profile
