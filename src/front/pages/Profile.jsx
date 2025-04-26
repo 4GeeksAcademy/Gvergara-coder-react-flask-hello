@@ -1,34 +1,55 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { Navigate, useNavigate } from 'react-router-dom'
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL
 
 const Profile = () => {
-  const [isAuth, setIsAuth] = useState(null)
-  const [currentUser, setCurrentUSer] = useState(null)
-  fetch(`${backend_url}/private`, {
-    method: "POST",
-    headers: { "Authorization":"Bearer" + localStorage.getItem("token") },
-})
+  const { store, dispatch } = useGlobalReducer()
+  const navigate = useNavigate()
 
-    .then((response) => response.json())
-    .then((data) => {
-        console.log(data);
-        if (data.token) {
-            localStorage.setItem("token", data.token)
-        } else {
-            alert("Incorrect login. Please check your email or password.")
+  useEffect(() => {
+
+    fetch(`${backend_url}private`, {
+      method: "GET",
+      headers: { "Authorization": "Bearer " + localStorage.getItem("token") },
+    })
+
+      .then((response) => {
+        if(!response.ok){
         }
+        return response.json()
+      })
 
-    })
-    .catch((err) => {
+      .then((data) => {
+        if (data.user){
+          dispatch({
+            type: "set_current_user",
+            payload: data.user
+          })
+        }
+        navigate("/profile")
+        console.log(data);
+      }
+      )
+      .catch((err) => {
         console.error("Login error", err);
+      })
 
-    })
-  return (
-    <div className='text-center'>
-      <h1>Profile</h1>
-    </div>
-  )
+  }, [])
+  if (store.currenUser == null){
+    return <h1 className='text-center'> You are not allowed </h1>
+  }
+
+  if (store.currenUser){
+
+    return (
+      <div className='text-center'>
+        <h1>Profile</h1>
+        <p>email: {store.currenUser.email}</p>
+      </div>
+    )
+  }
 }
 
 export default Profile

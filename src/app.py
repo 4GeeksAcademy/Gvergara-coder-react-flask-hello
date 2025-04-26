@@ -16,6 +16,7 @@ from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+from flask_bcrypt import Bcrypt
 
 # from models import Person
 
@@ -28,6 +29,7 @@ app.url_map.strict_slashes = False
 app.config["JWT_SECRET_KEY"] = os.getenv('JWT_KEY')  # Change this!
 jwt = JWTManager(app)
 CORS(app)
+bcrypt = Bcrypt(app)
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -85,9 +87,10 @@ def login():
     if 'password' not in body:
         return jsonify({'msg': 'The password is required'}), 400
     user = User.query.filter_by(email=body['email']).first()
-    if user is None:
+    if user is None:#
         return jsonify({'msg': 'Invalid username or password'}), 400
-    if body['password'] != user.password:
+    password_valid = bcrypt.check_password_hash(user.password, body['password']) # returns True
+    if not password_valid:
         return jsonify({'msg': 'Invalid username or password'}), 400
     acces_token = create_access_token(identity=user.email)
     return jsonify({'msg': 'Are you logged in', 'token': acces_token}), 200
@@ -105,10 +108,12 @@ def signup():
     existing_user = User.query.filter_by(email=body['email']).first()
     if existing_user:
         return jsonify({'msg': 'This email was registered'}), 400
+    password_hash = bcrypt.generate_password_hash(body['password']).decode('utf-8')
+
 
     new_user = User()
     new_user.email = body['email']
-    new_user.password = body['password']
+    new_user.password = password_hash
     new_user.is_active = True
 
     db.session.add(new_user) 
@@ -125,7 +130,7 @@ def private():
     if user is None:
         return jsonify({'msg': 'User not found'}), 404
 
-    return jsonify(user.serialize()), 200   
+    return jsonify(user.serialize()), 200  
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
