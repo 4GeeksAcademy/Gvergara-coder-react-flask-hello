@@ -130,7 +130,7 @@ def private():
     if user is None:
         return jsonify({'msg': 'User not found'}), 404
 
-    return jsonify(user.serialize()), 200  
+    return jsonify({'user': user.serialize()}), 200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
